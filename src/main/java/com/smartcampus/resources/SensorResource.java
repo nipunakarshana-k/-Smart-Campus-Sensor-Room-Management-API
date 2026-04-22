@@ -1,51 +1,77 @@
 package com.smartcampus.resources;
 
 import com.smartcampus.models.Sensor;
-import com.smartcampus.models.Room;
 import com.smartcampus.store.DataStore;
+import com.smartcampus.dto.ApiResponse;
 
 import jakarta.ws.rs.*;
 import jakarta.ws.rs.core.MediaType;
 import jakarta.ws.rs.core.Response;
 
 import java.util.Collection;
+import java.util.stream.Collectors;
 
 @Path("/sensors")
 @Produces(MediaType.APPLICATION_JSON)
 @Consumes(MediaType.APPLICATION_JSON)
 public class SensorResource {
 
-    // GET all sensors
     @GET
-    public Collection<Sensor> getAllSensors() {
-        return DataStore.sensors.values();
+    public Response getAllSensors(@QueryParam("type") String type) {
+
+        Collection<Sensor> sensors = DataStore.sensors.values();
+
+        // 🔍 filter by type (like your friend)
+        if (type != null && !type.isEmpty()) {
+            sensors = sensors.stream()
+                    .filter(s -> s.getType().equalsIgnoreCase(type))
+                    .collect(Collectors.toList());
+
+            return Response.ok(
+                    new ApiResponse<>(
+                            true,
+                            "Sensors filtered by type successfully.",
+                            sensors
+                    )
+            ).build();
+        }
+
+        return Response.ok(
+                new ApiResponse<>(
+                        true,
+                        "Sensors retrieved successfully.",
+                        sensors
+                )
+        ).build();
     }
 
-    // POST create sensor
     @POST
     public Response createSensor(Sensor sensor) {
 
-        // Validate room exists
-        Room room = DataStore.rooms.get(sensor.getRoomId());
-
-        if (room == null) {
-            return Response.status(Response.Status.BAD_REQUEST)
-                    .entity("Room does not exist")
+        // ❌ room must exist
+        if (!DataStore.rooms.containsKey(sensor.getRoomId())) {
+            return Response.status(Response.Status.UNPROCESSABLE_ENTITY)
+                    .entity(new ApiResponse<>(
+                            false,
+                            "Sensor cannot be created because roomId '" + sensor.getRoomId() + "' does not exist.",
+                            null
+                    ))
                     .build();
         }
 
-        // Save sensor
         DataStore.sensors.put(sensor.getId(), sensor);
 
-        // Link sensor to room
-        room.getSensorIds().add(sensor.getId());
+        DataStore.rooms.get(sensor.getRoomId()).getSensorIds().add(sensor.getId());
 
         return Response.status(Response.Status.CREATED)
-                .entity(sensor)
+                .entity(new ApiResponse<>(
+                        true,
+                        "Sensor created successfully.",
+                        sensor
+                ))
                 .build();
     }
 
-    // GET sensor by ID
     @GET
     @Path("/{id}")
     public Response getSensor(@PathParam("id") String id) {
@@ -53,13 +79,24 @@ public class SensorResource {
         Sensor sensor = DataStore.sensors.get(id);
 
         if (sensor == null) {
-            return Response.status(Response.Status.NOT_FOUND).build();
+            return Response.status(Response.Status.NOT_FOUND)
+                    .entity(new ApiResponse<>(
+                            false,
+                            "Sensor not found: " + id,
+                            null
+                    ))
+                    .build();
         }
 
-        return Response.ok(sensor).build();
+        return Response.ok(
+                new ApiResponse<>(
+                        true,
+                        "Sensor retrieved successfully.",
+                        sensor
+                )
+        ).build();
     }
 
-    // DELETE sensor
     @DELETE
     @Path("/{id}")
     public Response deleteSensor(@PathParam("id") String id) {
@@ -67,16 +104,25 @@ public class SensorResource {
         Sensor sensor = DataStore.sensors.get(id);
 
         if (sensor == null) {
-            return Response.status(Response.Status.NOT_FOUND).build();
+            return Response.status(Response.Status.NOT_FOUND)
+                    .entity(new ApiResponse<>(
+                            false,
+                            "Sensor not found: " + id,
+                            null
+                    ))
+                    .build();
         }
 
-        Room room = DataStore.rooms.get(sensor.getRoomId());
-        if (room != null) {
-            room.getSensorIds().remove(id);
-        }
+        DataStore.rooms.get(sensor.getRoomId()).getSensorIds().remove(id);
 
         DataStore.sensors.remove(id);
 
-        return Response.ok().build();
+        return Response.ok(
+                new ApiResponse<>(
+                        true,
+                        "Sensor deleted successfully.",
+                        null
+                )
+        ).build();
     }
 }

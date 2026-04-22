@@ -7,4 +7,5 @@ C:\Users\User\Desktop\smart-campus-api\src\main\java\com\smartcampus\config\AppC
 C:\Users\User\Desktop\smart-campus-api\src\main\java\com\smartcampus\exceptions\RoomNotEmptyException.java
 C:\Users\User\Desktop\smart-campus-api\src\main\java\com\smartcampus\models\Sensor.java
 C:\Users\User\Desktop\smart-campus-api\src\main\java\com\smartcampus\resources\SensorResource.java
+C:\Users\User\Desktop\smart-campus-api\src\main\java\com\smartcampus\dto\ApiResponse.java
 C:\Users\User\Desktop\smart-campus-api\src\main\java\com\smartcampus\store\DataStore.java
