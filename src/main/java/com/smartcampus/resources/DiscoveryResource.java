@@ -1,5 +1,7 @@
 package com.smartcampus.resources;
 
+import com.smartcampus.dto.ApiResponse;
+
 import jakarta.ws.rs.GET;
 import jakarta.ws.rs.Path;
 import jakarta.ws.rs.Produces;
@@ -13,19 +15,23 @@ import java.util.Map;
 public class DiscoveryResource {
 
     @GET
-    public Map<String, Object> getInfo() {
+    public ApiResponse<Map<String, Object>> getInfo() {
 
-        Map<String, Object> response = new HashMap<>();
+        Map<String, Object> data = new HashMap<>();
 
-        response.put("version", "v1");
-        response.put("contact", "admin@university.com");
+        data.put("version", "v1");
+        data.put("contact", "admin@university.com");
 
         Map<String, String> links = new HashMap<>();
         links.put("rooms", "/api/v1/rooms");
         links.put("sensors", "/api/v1/sensors");
 
-        response.put("resources", links);
+        data.put("resources", links);
 
-        return response;
+        return new ApiResponse<>(
+                true,
+                "Smart Campus API root endpoint",
+                data
+        );
     }
 }

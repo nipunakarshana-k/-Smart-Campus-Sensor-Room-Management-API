@@ -22,6 +22,7 @@ public class SensorResource {
 
         Collection<Sensor> sensors = DataStore.sensors.values();
 
+        // filter by type
         if (type != null && !type.isEmpty()) {
             sensors = sensors.stream()
                     .filter(s -> s.getType() != null && s.getType().equalsIgnoreCase(type))
@@ -60,7 +61,7 @@ public class SensorResource {
                     .build();
         }
 
-        // validate ID
+        //  validate ID
         if (sensor.getId() == null || sensor.getId().isEmpty()) {
             return Response.status(Response.Status.BAD_REQUEST)
                     .entity(new ApiResponse<>(
@@ -71,7 +72,7 @@ public class SensorResource {
                     .build();
         }
 
-        // validate roomId
+        //  validate roomId
         if (sensor.getRoomId() == null || sensor.getRoomId().isEmpty()) {
             return Response.status(Response.Status.BAD_REQUEST)
                     .entity(new ApiResponse<>(
@@ -82,9 +83,9 @@ public class SensorResource {
                     .build();
         }
 
-        // room must exist (FIXED LINE)
+        //  room must exist (FIXED — no UNPROCESSABLE_ENTITY)
         if (!DataStore.rooms.containsKey(sensor.getRoomId())) {
-            return Response.status(Response.Status.BAD_REQUEST)
+            return Response.status(422) // ✅ FIXED HERE
                     .entity(new ApiResponse<>(
                             false,
                             "Sensor cannot be created because roomId '" + sensor.getRoomId() + "' does not exist.",
@@ -93,11 +94,13 @@ public class SensorResource {
                     .build();
         }
 
-        // save sensor
+        //  save sensor
         DataStore.sensors.put(sensor.getId(), sensor);
 
-        // link sensor to room
-        DataStore.rooms.get(sensor.getRoomId()).getSensorIds().add(sensor.getId());
+        // safe link sensor to room
+        if (DataStore.rooms.get(sensor.getRoomId()).getSensorIds() != null) {
+            DataStore.rooms.get(sensor.getRoomId()).getSensorIds().add(sensor.getId());
+        }
 
         return Response.status(Response.Status.CREATED)
                 .entity(new ApiResponse<>(

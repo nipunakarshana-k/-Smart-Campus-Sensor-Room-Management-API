@@ -9,9 +9,9 @@ import java.net.URI;
 
 public class Main {
 
-    public static void main(String[] args) {
+    public static final String BASE_URI = "http://localhost:8080/";
 
-        String BASE_URI = "http://localhost:8080/";
+    public static void main(String[] args) throws Exception {
 
         final ResourceConfig config = ResourceConfig.forApplication(new AppConfig())
                 .packages("com.smartcampus");
@@ -21,12 +21,13 @@ public class Main {
                 config
         );
 
-        System.out.println("Server running at http://localhost:8080/");
+        System.out.println("Server running at " + BASE_URI);
+        System.out.println("API root available at http://localhost:8080/api/v1");
+        System.out.println("Press ENTER to stop the server...");
 
-        try {
-            Thread.currentThread().join();
-        } catch (InterruptedException e) {
-            e.printStackTrace();
-        }
+
+        System.in.read();
+
+        server.shutdownNow();
     }
 }

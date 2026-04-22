@@ -9,31 +9,38 @@
     <artifactId>smart-campus-api</artifactId>
     <version>1.0-SNAPSHOT</version>
 
+    <!-- ✅ Java version -->
     <properties>
         <maven.compiler.source>17</maven.compiler.source>
         <maven.compiler.target>17</maven.compiler.target>
+        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     </properties>
 
+    <!-- ✅ Dependencies -->
     <dependencies>
 
+        <!-- Jersey Core -->
         <dependency>
             <groupId>org.glassfish.jersey.core</groupId>
             <artifactId>jersey-server</artifactId>
             <version>3.1.5</version>
         </dependency>
 
+        <!-- Grizzly HTTP Server -->
         <dependency>
             <groupId>org.glassfish.jersey.containers</groupId>
             <artifactId>jersey-container-grizzly2-http</artifactId>
             <version>3.1.5</version>
         </dependency>
 
+        <!-- JSON Support -->
         <dependency>
             <groupId>org.glassfish.jersey.media</groupId>
             <artifactId>jersey-media-json-binding</artifactId>
             <version>3.1.5</version>
         </dependency>
 
+        <!-- 🔥 REQUIRED (fix InjectionManager error) -->
         <dependency>
             <groupId>org.glassfish.jersey.inject</groupId>
             <artifactId>jersey-hk2</artifactId>
@@ -42,13 +49,27 @@
 
     </dependencies>
 
+    <!-- ✅ Build plugins -->
     <build>
         <plugins>
+
+            <!-- Compiler -->
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-compiler-plugin</artifactId>
                 <version>3.11.0</version>
             </plugin>
+
+            <!-- 🔥 Exec plugin (run main class properly) -->
+            <plugin>
+                <groupId>org.codehaus.mojo</groupId>
+                <artifactId>exec-maven-plugin</artifactId>
+                <version>3.1.0</version>
+                <configuration>
+                    <mainClass>com.smartcampus.Main</mainClass>
+                </configuration>
+            </plugin>
+
         </plugins>
     </build>
 
