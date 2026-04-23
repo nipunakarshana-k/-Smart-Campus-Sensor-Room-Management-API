@@ -2,7 +2,6 @@ package com.smartcampus.resources;
 
 import com.smartcampus.models.Room;
 import com.smartcampus.store.DataStore;
-import com.smartcampus.exceptions.RoomNotEmptyException;
 import com.smartcampus.dto.ApiResponse;
 
 import javax.ws.rs.*;
@@ -16,6 +15,7 @@ import java.util.Collection;
 @Consumes(MediaType.APPLICATION_JSON)
 public class RoomResource {
 
+    // GET all rooms
     @GET
     public Response getAllRooms() {
         return Response.ok(
@@ -27,6 +27,7 @@ public class RoomResource {
         ).build();
     }
 
+    // POST create room
     @POST
     public Response createRoom(Room room) {
 
@@ -51,6 +52,7 @@ public class RoomResource {
                 .build();
     }
 
+    // GET single room
     @GET
     @Path("/{id}")
     public Response getRoom(@PathParam("id") String id) {
@@ -76,6 +78,7 @@ public class RoomResource {
         ).build();
     }
 
+    // DELETE room
     @DELETE
     @Path("/{id}")
     public Response deleteRoom(@PathParam("id") String id) {
@@ -93,7 +96,13 @@ public class RoomResource {
         }
 
         if (!room.getSensorIds().isEmpty()) {
-            throw new RoomNotEmptyException("Room has sensors and cannot be deleted");
+            return Response.status(422)
+                    .entity(new ApiResponse<>(
+                            false,
+                            "Room has sensors and cannot be deleted",
+                            null
+                    ))
+                    .build();
         }
 
         DataStore.rooms.remove(id);

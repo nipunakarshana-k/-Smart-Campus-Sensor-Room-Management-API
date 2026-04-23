@@ -16,13 +16,11 @@ import java.util.stream.Collectors;
 @Consumes(MediaType.APPLICATION_JSON)
 public class SensorResource {
 
-    // GET all sensors (with optional filter)
     @GET
     public Response getAllSensors(@QueryParam("type") String type) {
 
         Collection<Sensor> sensors = DataStore.sensors.values();
 
-        // filter by type
         if (type != null && !type.isEmpty()) {
             sensors = sensors.stream()
                     .filter(s -> s.getType() != null && s.getType().equalsIgnoreCase(type))
@@ -46,11 +44,9 @@ public class SensorResource {
         ).build();
     }
 
-    // POST create sensor
     @POST
     public Response createSensor(Sensor sensor) {
 
-        // check null body
         if (sensor == null) {
             return Response.status(Response.Status.BAD_REQUEST)
                     .entity(new ApiResponse<>(
@@ -61,7 +57,6 @@ public class SensorResource {
                     .build();
         }
 
-        //  validate ID
         if (sensor.getId() == null || sensor.getId().isEmpty()) {
             return Response.status(Response.Status.BAD_REQUEST)
                     .entity(new ApiResponse<>(
@@ -72,7 +67,6 @@ public class SensorResource {
                     .build();
         }
 
-        //  validate roomId
         if (sensor.getRoomId() == null || sensor.getRoomId().isEmpty()) {
             return Response.status(Response.Status.BAD_REQUEST)
                     .entity(new ApiResponse<>(
@@ -83,9 +77,8 @@ public class SensorResource {
                     .build();
         }
 
-        //  room must exist (FIXED — no UNPROCESSABLE_ENTITY)
         if (!DataStore.rooms.containsKey(sensor.getRoomId())) {
-            return Response.status(422) // ✅ FIXED HERE
+            return Response.status(422)
                     .entity(new ApiResponse<>(
                             false,
                             "Sensor cannot be created because roomId '" + sensor.getRoomId() + "' does not exist.",
@@ -94,13 +87,9 @@ public class SensorResource {
                     .build();
         }
 
-        //  save sensor
         DataStore.sensors.put(sensor.getId(), sensor);
 
-        // safe link sensor to room
-        if (DataStore.rooms.get(sensor.getRoomId()).getSensorIds() != null) {
-            DataStore.rooms.get(sensor.getRoomId()).getSensorIds().add(sensor.getId());
-        }
+        DataStore.rooms.get(sensor.getRoomId()).getSensorIds().add(sensor.getId());
 
         return Response.status(Response.Status.CREATED)
                 .entity(new ApiResponse<>(
@@ -111,7 +100,6 @@ public class SensorResource {
                 .build();
     }
 
-    // GET one sensor
     @GET
     @Path("/{id}")
     public Response getSensor(@PathParam("id") String id) {
@@ -137,7 +125,6 @@ public class SensorResource {
         ).build();
     }
 
-    // DELETE sensor
     @DELETE
     @Path("/{id}")
     public Response deleteSensor(@PathParam("id") String id) {
@@ -154,11 +141,7 @@ public class SensorResource {
                     .build();
         }
 
-        // remove from room safely
-        if (DataStore.rooms.containsKey(sensor.getRoomId())) {
-            DataStore.rooms.get(sensor.getRoomId()).getSensorIds().remove(id);
-        }
-
+        DataStore.rooms.get(sensor.getRoomId()).getSensorIds().remove(id);
         DataStore.sensors.remove(id);
 
         return Response.ok(
