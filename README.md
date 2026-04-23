@@ -95,7 +95,7 @@ The API is configured to accept JSON input using `@Consumes(MediaType.APPLICATIO
 
 If a client sends data in an unsupported format (e.g., XML), the server responds with:
 
-→ **415 Unsupported Media Type**
+**415 Unsupported Media Type**
 
 This enforces strict API contracts and prevents invalid data processing.
 
