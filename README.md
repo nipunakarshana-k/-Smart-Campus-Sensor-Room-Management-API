@@ -1,7 +1,7 @@
 # Smart Campus Sensor & Room Management API
 
 **Module:** 5COSC022W – Client-Server Architectures
-**Student:** Nipun Gajasingha 
+**Student Name :** Nipun Gajasingha 
 
 ---
 
