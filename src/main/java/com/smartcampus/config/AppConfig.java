@@ -1,8 +1,12 @@
 package com.smartcampus.config;
 
-import jakarta.ws.rs.ApplicationPath;
-import jakarta.ws.rs.core.Application;
+import com.smartcampus.exceptions.RoomNotEmptyExceptionMapper;
+import org.glassfish.jersey.server.ResourceConfig;
 
-@ApplicationPath("/api/v1")
-public class AppConfig extends Application {
+public class AppConfig extends ResourceConfig {
+
+	public AppConfig() {
+		packages("com.smartcampus");
+		register(RoomNotEmptyExceptionMapper.class);
+	}
 }

@@ -1,6 +1,5 @@
 com\smartcampus\store\DataStore.class
 com\smartcampus\models\Sensor.class
-com\smartcampus\Main.class
 com\smartcampus\resources\RoomResource.class
 com\smartcampus\dto\ApiResponse.class
 com\smartcampus\exceptions\RoomNotEmptyExceptionMapper.class
